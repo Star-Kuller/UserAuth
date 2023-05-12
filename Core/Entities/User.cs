@@ -9,7 +9,7 @@ public class User
     public required string Name { get; set; }
     public string? Surname { get; set; }
     public string? Number { get; set; }
-    public string? PasswordHash { get; set; }
+    public required string PasswordHash { get; set; }
     
     public ICollection<Hobby> Hobbies { get; set; }
 }
