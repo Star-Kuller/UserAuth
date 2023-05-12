@@ -1,12 +1,15 @@
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Core.Entites;
+namespace Core.Entities;
 
 public class User
 {
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
     public required string Name { get; set; }
     public string? Surname { get; set; }
     public string? Number { get; set; }
     public string? PasswordHash { get; set; }
+    
+    public ICollection<Hobby> Hobbies { get; set; }
 }
