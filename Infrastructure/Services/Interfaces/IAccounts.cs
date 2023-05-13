@@ -1,6 +1,9 @@
+using Core.Entities;
+
 namespace Infrastructure.Services.Interfaces;
 
-public class IAccounts
+public interface IAccounts
 {
-    
+    public User Auth(string name, string password);
+    public User Registration(string name, string password, string? surname, string? number);
 }

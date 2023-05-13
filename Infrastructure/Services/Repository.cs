@@ -12,11 +12,6 @@ public class Repository : IRepository
         _myDbContext = myDbContext;
     }
 
-    public User? GetUser(long id)
-    {
-        return _myDbContext.Users.FirstOrDefault(u => u.Id == id);
-    }
-    
     public User? GetUser(string name)
     {
         return _myDbContext.Users.FirstOrDefault(u => u.Name == name);
@@ -32,17 +27,18 @@ public class Repository : IRepository
         _myDbContext.Users.Remove(user);
     }
 
-    public async void CreateUser(string name, string passwordHash)
+    public async Task<User> CreateUser(string name, string passwordHash)
     {
         _myDbContext.Users.Add(new User {Name = name, PasswordHash = passwordHash});
         await _myDbContext.SaveChangesAsync();
+        return _myDbContext.Users.FirstOrDefault(u => u.Name == name); 
     }
 
-    public async void UpdateUser(User user, UserModificatedFields select, string field)
+    public async Task<User> UpdateUser(User user, UserModificatedFields select, string field)
     {
         var modUser = await _myDbContext.Users.FindAsync(user.Id);
         if (modUser is null)
-            return;
+            return modUser;
 
         switch (select)
         {
@@ -67,5 +63,6 @@ public class Repository : IRepository
 
         _myDbContext.Update(modUser);
         await _myDbContext.SaveChangesAsync();
+        return modUser;
     }
 }

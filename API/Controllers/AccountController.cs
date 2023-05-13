@@ -1,45 +1,64 @@
+using System.Security.Claims;
 using API.Requsts;
+using Core.Entities;
+using Infrastructure.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 [ApiController]
-[Route("[controller]")]
+//[Route("[controller]")]
+[Route("/")]
 public class AccountController : ControllerBase
 {
+    private IAccounts _accounts;
+
+    public AccountController(IAccounts accounts)
+    {
+        _accounts = accounts;
+    }
+
+
     [HttpGet("/registration")]
     public IActionResult RegistrationGet() => NotFound();
     
     [HttpPost("/registration")]
     public IActionResult RegistrationPost(Registration registrationInfo)
     {
-        return BadRequest();
+        var user = _accounts.Registration(registrationInfo.Name, registrationInfo.Password,
+            registrationInfo.Surname, registrationInfo.Number);
+        if (user is null)
+            return StatusCode(406);
+        return Redirect($"/User/{user.Id}");
+    }
+
+    [HttpGet("/login")]
+    public IActionResult LoginGet() => NotFound();
+
+    [HttpPost("/login")]
+    public async Task<IActionResult> LoginPost(Login login)
+    {
+        User user = _accounts.Auth(login.Name, login.Password);
+        if (user is null) return Unauthorized();
+        var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Name) };
+        ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Cookies");
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+        return Redirect($"/User/{user.Id}");
     }
     
-    [HttpGet("/login")]
-    public IActionResult LoginGet()
+    [HttpGet("/logout")]
+    public async Task<IActionResult> LogoutGet()
     {
-        // html-форма для ввода логина/пароля
-        string loginForm = @"<!DOCTYPE html>
-        <html>
-            <head>
-                <meta charset='utf-8' />
-                <title>METANIT.COM</title>
-            </head>
-            <body>
-                <h2>Login Form</h2>
-                <form method='post'>
-                    <p>
-                        <label>Email</label><br />
-                        <input name='email' />
-                    </p>
-                    <p>
-                        <label>Password</label><br />
-                        <input type='password' name='password' />
-                    </p>
-                    <input type='submit' value='Login' />
-                </form>
-            </body>
-        </html>";
-        return Ok(loginForm);
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return Redirect("/login");
+    }
+    
+    [Authorize]
+    [HttpGet("/User/{id?}")]
+    public async Task<IActionResult> UserGet(int id)
+    {
+        return Ok("Hello world, " + id);
     }
 }

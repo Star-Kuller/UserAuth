@@ -1,11 +1,11 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace WriteAndReadTextFile;
+namespace Infrastructure;
 
 public static class SHA256HeshGenerator
 {
-    public static string ComputeSHA256(string s)
+    public static string ComputeSHA256(this string s)
     {
         string hash = String.Empty;
  
