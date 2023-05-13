@@ -14,12 +14,17 @@ public class Repository : IRepository
 
     public User? GetUser(long id)
     {
-        return null;
+        return _myDbContext.Users.FirstOrDefault(u => u.Id == id);
+    }
+    
+    public User? GetUser(string name)
+    {
+        return _myDbContext.Users.FirstOrDefault(u => u.Name == name);
     }
 
-    public IEnumerable<User>? GetAllUsers()
+    public IEnumerable<User> GetAllUsers()
     {
-        return null;
+        return _myDbContext.Users;
     }
 
     public void DeleteUser(User user)
@@ -27,9 +32,10 @@ public class Repository : IRepository
         _myDbContext.Users.Remove(user);
     }
 
-    public void CreateUser(string name, string passwordHash)
+    public async void CreateUser(string name, string passwordHash)
     {
         _myDbContext.Users.Add(new User {Name = name, PasswordHash = passwordHash});
+        await _myDbContext.SaveChangesAsync();
     }
 
     public async void UpdateUser(User user, UserModificatedFields select, string field)
@@ -50,11 +56,11 @@ public class Repository : IRepository
                 modUser.Number = field;
                 break;
             case UserModificatedFields.HobbyAdd:
-                var hobby = _myDbContext.Hobbies.Where(h => h.Name == field).First();
+                var hobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == field);
                 modUser.Hobbies.Add(hobby);
                 break;
             case UserModificatedFields.HobbyRemove:
-                var removeHobby = _myDbContext.Hobbies.Where(h => h.Name == field).First();
+                var removeHobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == field);
                 modUser.Hobbies.Remove(removeHobby);
                 break;
         }
