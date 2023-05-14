@@ -24,5 +24,8 @@ public sealed class AppDbContext : DbContext
             .HasMany(u => u.Hobbies)
             .WithMany(h => h.Users)
             .UsingEntity(j => j.ToTable("UserHobby"));
+            /*.HasMany(u => u.Hobbies)
+            .WithMany(h => h.Users)
+            .UsingEntity(j => j.ToTable("UserHobby"));*/
     }
 }

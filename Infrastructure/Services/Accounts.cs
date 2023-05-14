@@ -27,7 +27,7 @@ public class Accounts : IAccounts
         var user = _repository.GetUser(name);
         if (user is not null)
             return null;
-        user = _repository.CreateUser(name, password.ComputeSHA256()).Result;
+        user = _repository.CreateUser(name, password.ComputeSHA256());
         if(surname is not null) 
             user = _repository.UpdateUser(user, UserModificatedFields.Surname, surname);
         if(number is not null) 

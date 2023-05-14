@@ -8,7 +8,7 @@ public interface IRepository
     public User GetUser(string name);
     public IEnumerable<User> GetAllUsers();
     public void DeleteUser(User user);
-    public Task<User> CreateUser(string name, string passwordHash); 
+    public User CreateUser(string name, string passwordHash); 
     public User UpdateUser(User user, UserModificatedFields select, string field);
     public IEnumerable<Hobby> GetAllHobbies();
     public Hobby GetHobby(string name);

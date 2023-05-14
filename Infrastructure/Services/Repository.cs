@@ -33,10 +33,10 @@ public class Repository : IRepository
         _myDbContext.SaveChanges();
     }
 
-    public async Task<User> CreateUser(string name, string passwordHash)
+    public User CreateUser(string name, string passwordHash)
     {
         _myDbContext.Users.Add(new User {Name = name, PasswordHash = passwordHash, Hobbies = new List<Hobby>()});
-        await _myDbContext.SaveChangesAsync();
+        _myDbContext.SaveChanges();
         return _myDbContext.Users.FirstOrDefault(u => u.Name == name); 
     }
 
@@ -60,12 +60,16 @@ public class Repository : IRepository
                 var hobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == field);
                 if(hobby is null)
                     return modUser;
+                if (modUser.Hobbies is null)
+                    modUser.Hobbies = new List<Hobby>();
                 modUser.Hobbies.Add(hobby);
                 break;
             case UserModificatedFields.HobbyRemove:
                 var removeHobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == field);
                 if(removeHobby is null)
                     return modUser;
+                if (modUser.Hobbies is null)
+                    modUser.Hobbies = new List<Hobby>();
                 modUser.Hobbies.Remove(removeHobby);
                 break;
         }
