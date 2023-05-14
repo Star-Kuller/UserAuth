@@ -13,16 +13,18 @@ namespace API.Controllers;
 [Route("/")]
 public class AccountController : ControllerBase
 {
-    private IAccounts _accounts;
+    private readonly IAccounts _accounts;
+    private readonly IRepository _repository;
 
-    public AccountController(IAccounts accounts)
+    public AccountController(IAccounts accounts, IRepository repository)
     {
         _accounts = accounts;
+        _repository = repository;
     }
 
 
     [HttpGet("/registration")]
-    public IActionResult RegistrationGet() => NotFound();
+    public IActionResult RegistrationGet() => BadRequest();
     
     [HttpPost("/registration")]
     public IActionResult RegistrationPost(Registration registrationInfo)
@@ -35,14 +37,17 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet("/login")]
-    public IActionResult LoginGet() => NotFound();
+    public IActionResult LoginGet() => BadRequest();
 
     [HttpPost("/login")]
     public async Task<IActionResult> LoginPost(Login login)
     {
-        User user = _accounts.Auth(login.Name, login.Password);
+        var user = _accounts.Auth(login.Name, login.Password);
         if (user is null) return Unauthorized();
-        var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Name) };
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name),
+        };
         ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Cookies");
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
         return Redirect($"/User/{user.Id}");
@@ -57,8 +62,39 @@ public class AccountController : ControllerBase
     
     [Authorize]
     [HttpGet("/User/{id?}")]
-    public async Task<IActionResult> UserGet(int id)
+    public IActionResult UserGet(long id)
     {
-        return Ok("Hello world, " + id);
+        var user = _repository.GetUser(id);
+        if (user is null)
+            return BadRequest();
+        if (HttpContext.User.Identity.Name == user.Name)
+            return Ok("I'm " + id);
+        return Ok("Hello, " + id);
+    }
+
+    [Authorize]
+    [HttpDelete("/User/{id?}")]
+    public async Task<IActionResult> UserDelete(long id)
+    {
+        var user = _repository.GetUser(id);
+        if (user is null)
+            return BadRequest();
+        if (HttpContext.User.Identity.Name != user.Name)
+            return StatusCode(403);
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        _repository.DeleteUser(_repository.GetUser(id));
+        return Ok();
+    }
+    
+
+    [Authorize]
+    [HttpGet("/User")]
+    public IActionResult UserGet() => BadRequest();
+    
+    [Authorize]
+    [HttpGet("/UsersList")]
+    public IActionResult UsersListGet()
+    {
+        return Ok(_repository.GetAllUsers());
     }
 }

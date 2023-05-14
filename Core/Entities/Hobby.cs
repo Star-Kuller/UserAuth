@@ -8,5 +8,5 @@ public class Hobby
     public long Id { get; set; }
     public required string Name { get; set; }
     
-    public ICollection<User> Users { get; set; }
+    public required ICollection<User> Users { get; set; }
 }

@@ -12,6 +12,11 @@ public class Repository : IRepository
         _myDbContext = myDbContext;
     }
 
+    public User? GetUser(long id)
+    {
+        return _myDbContext.Users.FirstOrDefault(u => u.Id == id);
+    }
+    
     public User? GetUser(string name)
     {
         return _myDbContext.Users.FirstOrDefault(u => u.Name == name);
@@ -25,21 +30,21 @@ public class Repository : IRepository
     public void DeleteUser(User user)
     {
         _myDbContext.Users.Remove(user);
+        _myDbContext.SaveChanges();
     }
 
     public async Task<User> CreateUser(string name, string passwordHash)
     {
-        _myDbContext.Users.Add(new User {Name = name, PasswordHash = passwordHash});
+        _myDbContext.Users.Add(new User {Name = name, PasswordHash = passwordHash, Hobbies = new List<Hobby>()});
         await _myDbContext.SaveChangesAsync();
         return _myDbContext.Users.FirstOrDefault(u => u.Name == name); 
     }
 
-    public async Task<User> UpdateUser(User user, UserModificatedFields select, string field)
+    public User UpdateUser(User user, UserModificatedFields select, string field)
     {
-        var modUser = await _myDbContext.Users.FindAsync(user.Id);
+        var modUser = _myDbContext.Users.Find(user.Id);
         if (modUser is null)
             return modUser;
-
         switch (select)
         {
             case UserModificatedFields.Name:
@@ -53,16 +58,46 @@ public class Repository : IRepository
                 break;
             case UserModificatedFields.HobbyAdd:
                 var hobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == field);
+                if(hobby is null)
+                    return modUser;
                 modUser.Hobbies.Add(hobby);
                 break;
             case UserModificatedFields.HobbyRemove:
                 var removeHobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == field);
+                if(removeHobby is null)
+                    return modUser;
                 modUser.Hobbies.Remove(removeHobby);
                 break;
         }
 
         _myDbContext.Update(modUser);
-        await _myDbContext.SaveChangesAsync();
+        _myDbContext.SaveChanges();
         return modUser;
+    }
+
+    public IEnumerable<Hobby> GetAllHobbies()
+    {
+        return _myDbContext.Hobbies;
+    }
+
+    public Hobby GetHobby(string name)
+    {
+        return _myDbContext.Hobbies.FirstOrDefault(h => h.Name == name);
+    }
+
+    public Hobby AddHobby(string name)
+    {
+        _myDbContext.Hobbies.Add(new Hobby {Name = name, Users = new List<User>()});
+        _myDbContext.SaveChanges();
+        return _myDbContext.Hobbies.FirstOrDefault(h => h.Name == name); 
+    }
+
+    public void DeleteHobby(string name)
+    {
+        var hobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == name);
+        if(hobby is null)
+            return;
+        _myDbContext.Hobbies.Remove(hobby);
+        _myDbContext.SaveChanges();
     }
 }
