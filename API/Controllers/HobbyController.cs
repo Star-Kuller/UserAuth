@@ -35,7 +35,7 @@ public class HobbyController : ControllerBase
     public IActionResult Delete(NewHobby hobby)
     {
         _repository.DeleteHobby(hobby.Name);
-        return Accepted();
+        return Ok();
     }
     
     [Authorize]
@@ -49,7 +49,7 @@ public class HobbyController : ControllerBase
             return StatusCode(403);
         if(_repository.GetHobby(hobby.Name) is null)
             return BadRequest();
-        _repository.UpdateUser(user, UserModificatedFields.HobbyAdd, hobby.Name);
+        //_repository.UpdateUser(user, UserModificatedFields.HobbyAdd, hobby.Name);
         return Ok(_repository.UpdateUser(user, UserModificatedFields.HobbyAdd, hobby.Name));
     }
     

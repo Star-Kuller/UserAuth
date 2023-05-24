@@ -57,12 +57,12 @@ public class Repository : IRepository
                 modUser.Number = field;
                 break;
             case UserModificatedFields.HobbyAdd:
-                var hobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == field);
-                if(hobby is null)
+                var addHobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == field);
+                if(addHobby is null)
                     return modUser;
                 if (modUser.Hobbies is null)
                     modUser.Hobbies = new List<UserHobby>();
-                //modUser.Hobbies.Add(hobby);
+                modUser.Hobbies.Add(new UserHobby {User = modUser, Hobby = addHobby});
                 break;
             case UserModificatedFields.HobbyRemove:
                 var removeHobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == field);
@@ -70,7 +70,7 @@ public class Repository : IRepository
                     return modUser;
                 if (modUser.Hobbies is null)
                     modUser.Hobbies = new List<UserHobby>();
-                //modUser.Hobbies.Remove(removeHobby);
+                modUser.Hobbies.Remove(new UserHobby {User = modUser, Hobby = removeHobby});
                 break;
         }
 
@@ -91,17 +91,19 @@ public class Repository : IRepository
 
     public Hobby AddHobby(string name)
     {
-        //_myDbContext.Hobbies.Add(new Hobby {Name = name, Users = new List<User>()});
+        //Need to add check Hobbies already exist
+        _myDbContext.Hobbies.Add(new Hobby {Name = name});
         _myDbContext.SaveChanges();
         return _myDbContext.Hobbies.FirstOrDefault(h => h.Name == name); 
     }
 
-    public void DeleteHobby(string name)
+    public int DeleteHobby(string name)
     {
         var hobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == name);
         if(hobby is null)
-            return;
+            return -1;
         _myDbContext.Hobbies.Remove(hobby);
         _myDbContext.SaveChanges();
+        return 0;
     }
 }

@@ -8,6 +8,5 @@ public class Hobby
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
     public required string Name { get; set; }
-    [JsonIgnore]
     public ICollection<UserHobby> Users { get; set; }
 }
