@@ -9,5 +9,5 @@ public class Hobby
     public long Id { get; set; }
     public required string Name { get; set; }
     [JsonIgnore]
-    public ICollection<User> Users { get; set; }
+    public ICollection<UserHobby> Users { get; set; }
 }

@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -44,30 +44,30 @@ namespace Infrastructure.Migrations
                 name: "UserHobby",
                 columns: table => new
                 {
-                    HobbiesId = table.Column<long>(type: "bigint", nullable: false),
-                    UsersId = table.Column<long>(type: "bigint", nullable: false)
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    HobbyId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserHobby", x => new { x.HobbiesId, x.UsersId });
+                    table.PrimaryKey("PK_UserHobby", x => new { x.UserId, x.HobbyId });
                     table.ForeignKey(
-                        name: "FK_UserHobby_Hobbies_HobbiesId",
-                        column: x => x.HobbiesId,
+                        name: "FK_UserHobby_Hobbies_HobbyId",
+                        column: x => x.HobbyId,
                         principalTable: "Hobbies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserHobby_Users_UsersId",
-                        column: x => x.UsersId,
+                        name: "FK_UserHobby_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserHobby_UsersId",
+                name: "IX_UserHobby_HobbyId",
                 table: "UserHobby",
-                column: "UsersId");
+                column: "HobbyId");
         }
 
         /// <inheritdoc />

@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230512182247_Init")]
-    partial class Init
+    [Migration("20230524194349_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,34 +68,49 @@ namespace Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("HobbyUser", b =>
+            modelBuilder.Entity("Core.Entities.UserHobby", b =>
                 {
-                    b.Property<long>("HobbiesId")
+                    b.Property<long>("UserId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    b.Property<long>("UsersId")
+                    b.Property<long>("HobbyId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("HobbiesId", "UsersId");
+                    b.HasKey("UserId", "HobbyId");
 
-                    b.HasIndex("UsersId");
+                    b.HasIndex("HobbyId");
 
-                    b.ToTable("UserHobby", (string)null);
+                    b.ToTable("UserHobby");
                 });
 
-            modelBuilder.Entity("HobbyUser", b =>
+            modelBuilder.Entity("Core.Entities.UserHobby", b =>
                 {
-                    b.HasOne("Core.Entities.Hobby", null)
-                        .WithMany()
-                        .HasForeignKey("HobbiesId")
+                    b.HasOne("Core.Entities.Hobby", "Hobby")
+                        .WithMany("Users")
+                        .HasForeignKey("HobbyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
+                    b.HasOne("Core.Entities.User", "User")
+                        .WithMany("Hobbies")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Hobby");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Core.Entities.Hobby", b =>
+                {
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Core.Entities.User", b =>
+                {
+                    b.Navigation("Hobbies");
                 });
 #pragma warning restore 612, 618
         }

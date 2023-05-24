@@ -35,7 +35,7 @@ public class Repository : IRepository
 
     public User CreateUser(string name, string passwordHash)
     {
-        _myDbContext.Users.Add(new User {Name = name, PasswordHash = passwordHash, Hobbies = new List<Hobby>()});
+        _myDbContext.Users.Add(new User {Name = name, PasswordHash = passwordHash});
         _myDbContext.SaveChanges();
         return _myDbContext.Users.FirstOrDefault(u => u.Name == name); 
     }
@@ -61,16 +61,16 @@ public class Repository : IRepository
                 if(hobby is null)
                     return modUser;
                 if (modUser.Hobbies is null)
-                    modUser.Hobbies = new List<Hobby>();
-                modUser.Hobbies.Add(hobby);
+                    modUser.Hobbies = new List<UserHobby>();
+                //modUser.Hobbies.Add(hobby);
                 break;
             case UserModificatedFields.HobbyRemove:
                 var removeHobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == field);
                 if(removeHobby is null)
                     return modUser;
                 if (modUser.Hobbies is null)
-                    modUser.Hobbies = new List<Hobby>();
-                modUser.Hobbies.Remove(removeHobby);
+                    modUser.Hobbies = new List<UserHobby>();
+                //modUser.Hobbies.Remove(removeHobby);
                 break;
         }
 
@@ -91,7 +91,7 @@ public class Repository : IRepository
 
     public Hobby AddHobby(string name)
     {
-        _myDbContext.Hobbies.Add(new Hobby {Name = name, Users = new List<User>()});
+        //_myDbContext.Hobbies.Add(new Hobby {Name = name, Users = new List<User>()});
         _myDbContext.SaveChanges();
         return _myDbContext.Hobbies.FirstOrDefault(h => h.Name == name); 
     }
