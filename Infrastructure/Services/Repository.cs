@@ -1,5 +1,6 @@
 using Core.Entities;
 using Infrastructure.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services;
 
@@ -14,17 +15,17 @@ public class Repository : IRepository
 
     public User? GetUser(long id)
     {
-        return _myDbContext.Users.FirstOrDefault(u => u.Id == id);
+        return _myDbContext.Users.Include(u => u.Hobbies).FirstOrDefault(u => u.Id == id);
     }
     
     public User? GetUser(string name)
     {
-        return _myDbContext.Users.FirstOrDefault(u => u.Name == name);
+        return _myDbContext.Users.Include(u => u.Hobbies).FirstOrDefault(u => u.Name == name);
     }
 
     public IEnumerable<User> GetAllUsers()
     {
-        return _myDbContext.Users;
+        return _myDbContext.Users.Include(u => u.Hobbies);
     }
 
     public void DeleteUser(User user)
@@ -37,7 +38,7 @@ public class Repository : IRepository
     {
         _myDbContext.Users.Add(new User {Name = name, PasswordHash = passwordHash});
         _myDbContext.SaveChanges();
-        return _myDbContext.Users.FirstOrDefault(u => u.Name == name); 
+        return _myDbContext.Users.Include(u => u.Hobbies).FirstOrDefault(u => u.Name == name); 
     }
 
     public User UpdateUser(User user, UserModificatedFields select, string field)
@@ -57,20 +58,20 @@ public class Repository : IRepository
                 modUser.Number = field;
                 break;
             case UserModificatedFields.HobbyAdd:
-                var addHobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == field);
+                var addHobby = _myDbContext.Hobbies.Include(h => h.Users).FirstOrDefault(h => h.Name == field);
                 if(addHobby is null)
                     return modUser;
                 if (modUser.Hobbies is null)
-                    modUser.Hobbies = new List<UserHobby>();
-                modUser.Hobbies.Add(new UserHobby {User = modUser, Hobby = addHobby});
+                    modUser.Hobbies = new List<Hobby>();
+                modUser.Hobbies.Add(addHobby);
                 break;
             case UserModificatedFields.HobbyRemove:
-                var removeHobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == field);
+                var removeHobby = _myDbContext.Hobbies.Include(h => h.Users).FirstOrDefault(h => h.Name == field);
                 if(removeHobby is null)
                     return modUser;
                 if (modUser.Hobbies is null)
-                    modUser.Hobbies = new List<UserHobby>();
-                modUser.Hobbies.Remove(new UserHobby {User = modUser, Hobby = removeHobby});
+                    modUser.Hobbies = new List<Hobby>();
+                modUser.Hobbies.Remove(removeHobby);
                 break;
         }
 
@@ -86,7 +87,7 @@ public class Repository : IRepository
 
     public Hobby GetHobby(string name)
     {
-        return _myDbContext.Hobbies.FirstOrDefault(h => h.Name == name);
+        return _myDbContext.Hobbies.Include(h => h.Users).FirstOrDefault(h => h.Name == name);
     }
 
     public Hobby AddHobby(string name)
@@ -99,7 +100,7 @@ public class Repository : IRepository
 
     public int DeleteHobby(string name)
     {
-        var hobby = _myDbContext.Hobbies.FirstOrDefault(h => h.Name == name);
+        var hobby = _myDbContext.Hobbies.Include(h => h.Users).FirstOrDefault(h => h.Name == name);
         if(hobby is null)
             return -1;
         _myDbContext.Hobbies.Remove(hobby);

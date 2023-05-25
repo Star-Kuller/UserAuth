@@ -11,5 +11,5 @@ public class User
     public string? Number { get; set; }
     public required string PasswordHash { get; set; }
     
-    public ICollection<UserHobby> Hobbies { get; set; }
+    public ICollection<Hobby> Hobbies { get; set; }
 }

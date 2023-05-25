@@ -20,11 +20,11 @@ public sealed class AppDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        /*modelBuilder.Entity<User>()
+        modelBuilder.Entity<User>()
             .HasMany(u => u.Hobbies)
             .WithMany(h => h.Users)
-            .UsingEntity(j => j.ToTable("UserHobby"));*/
-        modelBuilder.Entity<UserHobby>()
+            .UsingEntity(j => j.ToTable("UserHobby"));
+        /*modelBuilder.Entity<UserHobby>()
             .HasKey(uh => new { uh.UserId, uh.HobbyId });
         modelBuilder.Entity<UserHobby>()
             .HasOne(uh => uh.User)
@@ -33,6 +33,6 @@ public sealed class AppDbContext : DbContext
         modelBuilder.Entity<UserHobby>()
             .HasOne(uh => uh.Hobby)
             .WithMany(uh => uh.Users)
-            .HasForeignKey(uh => uh.HobbyId);
+            .HasForeignKey(uh => uh.HobbyId);*/
     }
 }
