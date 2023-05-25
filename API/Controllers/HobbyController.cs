@@ -25,16 +25,16 @@ public class HobbyController : ControllerBase
     
     [Authorize]
     [HttpPost]
-    public IActionResult Post(NewHobby hobby)
+    public async Task<IActionResult> Post(NewHobby hobby)
     {
-        return Created("/", _repository.AddHobby(hobby.Name));
+        return Created("/", await _repository.AddHobby(hobby.Name));
     }
     
     [Authorize]
     [HttpDelete]
-    public IActionResult Delete(NewHobby hobby)
+    public async Task<IActionResult> Delete(NewHobby hobby)
     {
-        var status = _repository.DeleteHobby(hobby.Name);
+        var status = await _repository.DeleteHobby(hobby.Name);
         if (status == Status.NotFound)
             return NotFound();
         return Ok();
@@ -42,7 +42,7 @@ public class HobbyController : ControllerBase
     
     [Authorize]
     [HttpPost("/User/{id?}")]
-    public IActionResult HobbyAdd(long id, AddHobby hobby)
+    public async Task<IActionResult> HobbyAdd(long id, AddHobby hobby)
     {
         var user = _repository.GetUser(id);
         if (user is null)
@@ -52,12 +52,12 @@ public class HobbyController : ControllerBase
         if(_repository.GetHobby(hobby.Name) is null)
             return BadRequest();
         //_repository.UpdateUser(user, UserModificatedFields.HobbyAdd, hobby.Name);
-        return Ok(_repository.UpdateUser(user, UserModificatedFields.HobbyAdd, hobby.Name));
+        return Ok(await _repository.UpdateUser(user, UserModificatedFields.HobbyAdd, hobby.Name));
     }
     
     [Authorize]
     [HttpDelete("/User/{id?}/{hobby?}")]
-    public IActionResult HobbyRemove(long id, string hobby)
+    public async Task<IActionResult> HobbyRemove(long id, string hobby)
     {
         var user = _repository.GetUser(id);
         if (user is null)
@@ -66,7 +66,7 @@ public class HobbyController : ControllerBase
             return StatusCode(403);
         if(_repository.GetHobby(hobby) is null)
             return BadRequest();
-        _repository.UpdateUser(user, UserModificatedFields.HobbyRemove, hobby);
-        return Ok(_repository.UpdateUser(user, UserModificatedFields.HobbyRemove, hobby));
+        await _repository.UpdateUser(user, UserModificatedFields.HobbyRemove, hobby);
+        return Ok(await _repository.UpdateUser(user, UserModificatedFields.HobbyRemove, hobby));
     }
 }

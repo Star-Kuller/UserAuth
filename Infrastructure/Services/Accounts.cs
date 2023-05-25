@@ -22,16 +22,16 @@ public class Accounts : IAccounts
         return null;
     }
 
-    public User Registration(string name, string password, string? surname, string? number)
+    public async Task<User> Registration(string name, string password, string? surname, string? number)
     {
         var user = _repository.GetUser(name);
         if (user is not null)
             return null;
-        user = _repository.CreateUser(name, password.ComputeSHA256());
+        user = await _repository.CreateUser(name, password.ComputeSHA256());
         if(surname is not null) 
-            user = _repository.UpdateUser(user, UserModificatedFields.Surname, surname);
+            user = await _repository.UpdateUser(user, UserModificatedFields.Surname, surname);
         if(number is not null) 
-            user = _repository.UpdateUser(user, UserModificatedFields.Number, number);
+            user = await _repository.UpdateUser(user, UserModificatedFields.Number, number);
         return user;
     }
 }

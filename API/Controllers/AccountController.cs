@@ -27,12 +27,12 @@ public class AccountController : ControllerBase
     public IActionResult RegistrationGet() => BadRequest("Work In Progress (/registration)");
     
     [HttpPost("/registration")]
-    public IActionResult RegistrationPost(Registration registrationInfo)
+    public async Task<IActionResult> RegistrationPost(Registration registrationInfo)
     {
-        var user = _accounts.Registration(registrationInfo.Name, registrationInfo.Password,
+        var user = await _accounts.Registration(registrationInfo.Name, registrationInfo.Password,
             registrationInfo.Surname, registrationInfo.Number);
         if (user is null)
-            return StatusCode(406);
+            return BadRequest("User already exist");
         return Redirect($"/User/{user.Id}");
     }
 

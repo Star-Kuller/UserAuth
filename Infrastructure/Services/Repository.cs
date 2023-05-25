@@ -28,22 +28,22 @@ public class Repository : IRepository
         return _myDbContext.Users.Include(u => u.Hobbies);
     }
 
-    public void DeleteUser(User user)
+    public async void DeleteUser(User user)
     {
         _myDbContext.Users.Remove(user);
-        _myDbContext.SaveChanges();
+        await _myDbContext.SaveChangesAsync();
     }
 
-    public User CreateUser(string name, string passwordHash)
+    public async Task<User> CreateUser(string name, string passwordHash)
     {
         _myDbContext.Users.Add(new User {Name = name, PasswordHash = passwordHash});
         _myDbContext.SaveChanges();
         return _myDbContext.Users.Include(u => u.Hobbies).FirstOrDefault(u => u.Name == name); 
     }
 
-    public User UpdateUser(User user, UserModificatedFields select, string field)
+    public async Task<User> UpdateUser(User user, UserModificatedFields select, string field)
     {
-        var modUser = _myDbContext.Users.Find(user.Id);
+        var modUser = await _myDbContext.Users.FindAsync(user.Id);
         if (modUser is null)
             return modUser;
         switch (select)
@@ -76,7 +76,7 @@ public class Repository : IRepository
         }
 
         _myDbContext.Update(modUser);
-        _myDbContext.SaveChanges();
+        await _myDbContext.SaveChangesAsync();
         return modUser;
     }
 
@@ -90,22 +90,23 @@ public class Repository : IRepository
         return _myDbContext.Hobbies.Include(h => h.Users).FirstOrDefault(h => h.Name == name);
     }
 
-    public Hobby AddHobby(string name)
+    public async Task<Hobby> AddHobby(string name)
     {
         if (_myDbContext.Hobbies.Contains(new Hobby { Name = name }))
             return _myDbContext.Hobbies.FirstOrDefault(h => h.Name == name);
-        _myDbContext.Hobbies.Add(new Hobby {Name = name});
-        _myDbContext.SaveChanges();
-        return _myDbContext.Hobbies.FirstOrDefault(h => h.Name == name); 
+        var newHobby = new Hobby { Name = name };
+        _myDbContext.Hobbies.Add(newHobby);
+        await _myDbContext.SaveChangesAsync();
+        return newHobby; 
     }
 
-    public Status DeleteHobby(string name)
+    public async Task<Status> DeleteHobby(string name)
     {
         var hobby = _myDbContext.Hobbies.Include(h => h.Users).FirstOrDefault(h => h.Name == name);
         if(hobby is null)
             return Status.NotFound;
         _myDbContext.Hobbies.Remove(hobby);
-        _myDbContext.SaveChanges();
+        await _myDbContext.SaveChangesAsync();
         return Status.Success;
     }
 }
