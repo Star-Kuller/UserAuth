@@ -13,6 +13,6 @@ public interface IRepository
     public IEnumerable<Hobby> GetAllHobbies();
     public Hobby GetHobby(string name);
     public Hobby AddHobby(string name);
-    public int DeleteHobby(string name);
+    public Status DeleteHobby(string name);
     
 }

@@ -24,7 +24,7 @@ public class AccountController : ControllerBase
 
 
     [HttpGet("/registration")]
-    public IActionResult RegistrationGet() => BadRequest();
+    public IActionResult RegistrationGet() => BadRequest("Work In Progress (/registration)");
     
     [HttpPost("/registration")]
     public IActionResult RegistrationPost(Registration registrationInfo)
@@ -37,7 +37,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet("/login")]
-    public IActionResult LoginGet() => BadRequest();
+    public IActionResult LoginGet() => BadRequest("Work In Progress (/login)");
 
     [HttpPost("/login")]
     public async Task<IActionResult> LoginPost(Login login)
@@ -89,7 +89,7 @@ public class AccountController : ControllerBase
 
     [Authorize]
     [HttpGet("/User")]
-    public IActionResult UserGet() => BadRequest();
+    public IActionResult UserGet() => BadRequest("Work In Progress (/User)");
     
     [Authorize]
     [HttpGet("/UsersList")]

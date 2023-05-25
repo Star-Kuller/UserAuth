@@ -82,7 +82,7 @@ public class Repository : IRepository
 
     public IEnumerable<Hobby> GetAllHobbies()
     {
-        return _myDbContext.Hobbies;
+        return _myDbContext.Hobbies.Include(h => h.Users);
     }
 
     public Hobby GetHobby(string name)
@@ -92,19 +92,20 @@ public class Repository : IRepository
 
     public Hobby AddHobby(string name)
     {
-        //Need to add check Hobbies already exist
+        if (_myDbContext.Hobbies.Contains(new Hobby { Name = name }))
+            return _myDbContext.Hobbies.FirstOrDefault(h => h.Name == name);
         _myDbContext.Hobbies.Add(new Hobby {Name = name});
         _myDbContext.SaveChanges();
         return _myDbContext.Hobbies.FirstOrDefault(h => h.Name == name); 
     }
 
-    public int DeleteHobby(string name)
+    public Status DeleteHobby(string name)
     {
         var hobby = _myDbContext.Hobbies.Include(h => h.Users).FirstOrDefault(h => h.Name == name);
         if(hobby is null)
-            return -1;
+            return Status.NotFound;
         _myDbContext.Hobbies.Remove(hobby);
         _myDbContext.SaveChanges();
-        return 0;
+        return Status.Success;
     }
 }

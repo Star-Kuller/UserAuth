@@ -34,7 +34,9 @@ public class HobbyController : ControllerBase
     [HttpDelete]
     public IActionResult Delete(NewHobby hobby)
     {
-        _repository.DeleteHobby(hobby.Name);
+        var status = _repository.DeleteHobby(hobby.Name);
+        if (status == Status.NotFound)
+            return NotFound();
         return Ok();
     }
     
