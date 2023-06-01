@@ -37,8 +37,12 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet("/login")]
-    public IActionResult LoginGet() => BadRequest("Work In Progress (/login)");
-
+    public IActionResult LoginGet()
+    {
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "HTML/login.html");
+        return PhysicalFile(filePath, "text/html");
+    }
+    
     [HttpPost("/login")]
     public async Task<IActionResult> LoginPost(Login login)
     {

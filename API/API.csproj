@@ -18,12 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="wwwroot\Login.html" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Folder Include="Responces\" />
-      <Folder Include="wwwroot\" />
     </ItemGroup>
 
 </Project>
