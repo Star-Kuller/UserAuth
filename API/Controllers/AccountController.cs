@@ -22,10 +22,6 @@ public class AccountController : ControllerBase
         _repository = repository;
     }
 
-
-    [HttpGet("/registration")]
-    public IActionResult RegistrationGet() => BadRequest("Work In Progress (/registration)");
-    
     [HttpPost("/registration")]
     public async Task<IActionResult> RegistrationPost(Registration registrationInfo)
     {
@@ -70,10 +66,11 @@ public class AccountController : ControllerBase
     {
         var user = _repository.GetUser(id);
         if (user is null)
-            return BadRequest();
-        if (HttpContext.User.Identity.Name == user.Name)
-            return Ok("I'm " + id);
-        return Ok("Hello, " + id);
+            return NotFound();
+        /*if (HttpContext.User.Identity.Name == user.Name)
+            return Ok("It's me");
+        return Ok("Hello, " + id);*/
+        return Ok(user);
     }
 
     [Authorize]
@@ -89,12 +86,7 @@ public class AccountController : ControllerBase
         _repository.DeleteUser(_repository.GetUser(id));
         return Ok();
     }
-    
 
-    [Authorize]
-    [HttpGet("/User")]
-    public IActionResult UserGet() => BadRequest("Work In Progress (/User)");
-    
     [Authorize]
     [HttpGet("/UsersList")]
     public IActionResult UsersListGet()
